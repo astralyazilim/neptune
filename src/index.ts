@@ -1,63 +1,71 @@
 
-import { App,  NodeAdapter, Resource } from "./core"
-import {  Service , serviceScope } from "./common"
-import { injectable, Lifecycle, scoped, singleton , container } from "tsyringe"
+import { createServer } from "http";
+import { createNeptune } from "./app";
+import { AdapterCore, NodeAdapter } from "./app/adapter";
+import { Resource } from "./app/resource";
+import { NeptuneError } from "./healpers/error";
+import { NeptuneRequest } from "./internal/body";
+import { Response } from "./internal/response";
 
-@Service(serviceScope.Transient)
-export class UserService {
-    users: any[] = []
-}
-@singleton()
-export class RandomService {
-    number = Math.random()
-}
+class UserNotFoundError extends NeptuneError {
+    override headers: Record<string,string> = {
+        ...this.headers, test: "test"
+    }
 
-@injectable()
-export class RandomService1 {
-    number = Math.random()
-}
-
-class ProfileResource implements Resource {
-
-    async GET(request: any): Promise<Response> {
-
-        const user = request.user
-        return new Response(JSON.stringify({img: "http://localhost:3000/profiles/user" + user + "/img.jpg"}))
+    constructor(userName: string) {
+        super( `user ${userName} not found`, 404) 
     }
 }
 
 
-class UserResource implements Resource {
+class UserResource extends Resource {
+   
+    public path = /\/user\/foo\/\w+/ // regexp path
+
+   
     
-    /**
-     * @param {ProfileResource} profileResource
-     * automatically resolved by ioc container 
-     */
-    constructor(
-        public path:string = "/",
-        private profileResource: ProfileResource,
-        private userService: UserService,
-        private radom: RandomService,
-        private random1: RandomService1) { }
-
-    async GET(request: Request): Promise<Response> {
-       
-        console.log(this.radom.number, this.random1.number)
-        return new Response(JSON.stringify(this.userService.users))
+    // if given path is regexp must be used to parse params
+    // custom params handler
+    override params(): Record<string, string> {
+        
+        return {
+            id: this.url.match(/(?<=\/user\/foo\/)\w+(?=$)/)?.[0] || ""
+        }
     }
 
 
- 
-    async POST(): Promise<Response> {
-        const r = await (await this.profileResource.GET({user: this.userService.users.length})).json()
-        this.userService.users.push({id:this.userService.users.length, name: "user" + this.userService.users.length, profile: r})
-        return new Response(JSON.stringify(this.userService.users))
+    async GET(request: NeptuneRequest) {
+
+        const id = this.params().id
+      
+        if (id == "")  throw new UserNotFoundError("jhon")
+        const user = { firstName: "jhon", lastName: "doe", id:id }
+        
+    
+        return Response.json(user, 200, { /** headers */})
     }
+
+    public ERROR(error?: UserNotFoundError) {
+        
+        return Response.json({ message: " user not found"})
+    }
+
+    
+
 }
 
 
-new App({
-    resources: [UserResource, ProfileResource],
-    adapter: new NodeAdapter(3000) // NodeAdapter , NetlifyAdapter , CloudFlareAdapter, yada kendi custom adaptorunu olusturabilirsiniz
+
+const app = createNeptune({
+    adapter: NodeAdapter,
+    hostname: "localhost",
+    port: 3000,
+    resources: [
+        UserResource
+    ]
 })
+
+
+app.run(() => console.log("app running on port 3000"))
+
 
