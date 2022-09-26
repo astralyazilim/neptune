@@ -1,4 +1,5 @@
 export class NeptuneError {
-    
-    constructor(public message: string, public status: number, public headers: Record<string,string> = {}) {}
+  public message: string = "Error";
+  public status: number = 500;
+  public headers: Record<string, string> = {};
 }
