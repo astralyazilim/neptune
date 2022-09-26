@@ -1,8 +1,13 @@
 {
-  "name": "neptune",
+  "name": "@astral/neptune",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/astralyazilim/neptune.git"
+  },
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "test": "jest --watchAll --verbose",
     "dev": "tsnd --respawn src/index.ts"
