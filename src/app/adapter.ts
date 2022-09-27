@@ -9,7 +9,8 @@ import { NeptuneError } from "../healpers/error";
 import { NeptuneRequest } from "../internal/body";
 import { INeptunResponse } from "../internal/response";
 import { Resource } from "./resource";
-
+import { findResource } from "../internal/findResource";
+import { INeptuneHooks } from "./hook";
 export interface INeptunAdapterResponse {
   headers: Record<string, string>;
   status: number;
@@ -20,16 +21,15 @@ export class AdapterCore {
     protected host: string | undefined = undefined,
     protected port: string | number = 3000,
     protected resources: Array<any & Resource> = [],
+    protected hooks?: INeptuneHooks,
     protected services: [] = []
   ) {}
-  protected async onRequest(
+  protected async AdaptRequest(
     path: string,
     method: string,
     request: any
   ): Promise<INeptunAdapterResponse> {
-    let resource: any & Resource = this.resources.find((resource) =>
-      new resource().getRegexpPath().test(path)
-    );
+    let resource: any & Resource = findResource(this.resources, path);
     if (!resource) return { body: "", headers: {}, status: 404 };
     else {
       resource = new resource();
@@ -74,21 +74,25 @@ export class NodeAdapter extends AdapterCore {
     host?: string,
     port?: string | number,
     resources: Array<any & Resource> = [],
+    hooks?: INeptuneHooks,
     services: [] = []
   ) {
-    super(host, port, resources, services);
+    super(host, port, resources, hooks, services);
 
     if (this.port) {
       this.server
         .on(
           "request",
           async (request: IncomingMessage, response: ServerResponse) => {
-            const path = request.url || "";
-            const method = (request.method || "GET").toUpperCase();
-            const { headers, body, status } = await this.onRequest(
-              path,
-              method,
-              new NeptuneRequest(request, response, path, request.headers)
+            const { headers, body, status } = await this.AdaptRequest(
+              request.url || "/",
+              (request.method || "GET").toUpperCase(),
+              new NeptuneRequest(
+                request,
+                response,
+                request.url || "/",
+                request.headers
+              )
             );
 
             response.writeHead(status || 200, headers).end(body || "");
@@ -99,7 +103,6 @@ export class NodeAdapter extends AdapterCore {
   }
 
   public stop() {
-    console.log("close");
     const onRequest = (request: IncomingMessage, response: ServerResponse) => {
       response.end(); //close the response
       request.socket.end(); //close the socket

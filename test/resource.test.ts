@@ -1,8 +1,11 @@
-import { TestResource, app } from "./mock/index";
+import { Resource } from "../src/app/resource";
+import { findResource } from "../src/internal/findResource";
+import { TestResource, app, TestResource2 } from "./mock/index";
 describe("Resource", () => {
   beforeAll(async () => {
     app.run();
   });
+
   it("should have path property", () => {
     expect(new TestResource()).toHaveProperty("path");
   });
@@ -31,6 +34,18 @@ describe("Resource", () => {
     expect(data.id).toBe("1");
   });
 
+  it("should find resource from request url", () => {
+    const resource: any & Resource = findResource(
+      [TestResource, TestResource2] as Array<any & Resource>,
+      "/user"
+    );
+
+    expect(new resource()).toBeInstanceOf(TestResource2);
+  });
+
+  it("endpoints should run after before hook", () => {
+    
+  });
   afterAll(() => {
     app.stop();
   });

@@ -10,9 +10,17 @@ export class TestResource extends Resource {
     return Response.json({ user: "jdoe", id: this.param("id") });
   }
 }
+
+export class TestResource2 extends Resource {
+  public path = "/user";
+
+  GET(request: NeptuneRequest): INeptunResponse | Promise<INeptunResponse> {
+    return Response.json({ user: "jdoe" });
+  }
+}
 export const app = createNeptune({
   adapter: NodeAdapter,
   hostname: "localhost",
   port: 3001,
-  resources: [TestResource],
+  resources: [TestResource, TestResource2],
 });
