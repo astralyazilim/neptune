@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { NeptuneResource } from "./resource";
+import { Resource } from "../app/resource";
 export interface INeptunAdapterResponse {
     headers: Record<string, string>;
     status: number;
@@ -8,9 +8,9 @@ export interface INeptunAdapterResponse {
 export declare class AdapterCore {
     protected host: string | undefined;
     protected port: string | number;
-    protected resources: Array<any & NeptuneResource>;
+    protected resources: Array<any & Resource>;
     protected services: [];
-    constructor(host?: string | undefined, port?: string | number, resources?: Array<any & NeptuneResource>, services?: []);
+    constructor(host?: string | undefined, port?: string | number, resources?: Array<any & Resource>, services?: []);
     protected AdaptRequest(path: string, method: string, request: any): Promise<INeptunAdapterResponse>;
 }
-//# sourceMappingURL=adapter.d.ts.map
+//# sourceMappingURL=core.d.ts.map

@@ -1,20 +1,31 @@
 import { AdapterCore } from "./adapter";
-import { INeptuneHooks, NeptuneHook } from "./hook";
-import { Resource } from "./resource";
+import { NeptuneResource } from "./resource";
 
 export interface INeptunAppOptions {
-  adapter?: typeof AdapterCore;
-  resources?: Array<any & Resource>;
-  hooks?: { before?: NeptuneHook[] };
+  adapter?: any & AdapterCore;
+  resources?: Array<any & NeptuneResource>;
   hostname?: string;
   port?: number;
+  providers?: any[];
+}
+
+export enum NeptunMethods {
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  PATCH = "PATCH",
+  DELETE = "DELETE",
+  HEAD = "HEAD",
+  OPTIONS = "OPTIONS",
+  TRACE = "TRACE",
+  CONNECT = "CONNECT",
+  ERROR = "ERROR",
 }
 
 export class NeptuneApp {
   constructor(
     public adapter?: any & AdapterCore,
-    public resources?: Array<any & Resource>,
-    public hooks?: INeptuneHooks,
+    public resources?: Array<any & NeptuneResource>,
     public hostname?: string,
     public port?: number
   ) {}
@@ -25,7 +36,6 @@ export class NeptuneApp {
         this.hostname,
         this.port,
         this.resources,
-        this.hooks,
         []
       );
     } else throw new Error("Not adapter specified");
@@ -43,7 +53,6 @@ export function createNeptune(options: INeptunAppOptions) {
   return new NeptuneApp(
     options.adapter,
     options.resources,
-    options.hooks,
     options.hostname,
     options.port
   );

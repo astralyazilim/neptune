@@ -19,7 +19,8 @@ export declare class NeptuneRequest {
     readonly OriginalResponse: ServerResponse;
     path: string;
     headers: IncomingHttpHeaders;
-    constructor(OriginalRequest: IncomingMessage, OriginalResponse: ServerResponse, path: string, headers: IncomingHttpHeaders);
+    locals: Record<string, unknown>;
+    constructor(OriginalRequest: IncomingMessage, OriginalResponse: ServerResponse, path: string, headers: IncomingHttpHeaders, locals: Record<string, unknown>);
     formData(): Promise<Form>;
     json(): Promise<Record<string, unknown>>;
     text(): Promise<string>;

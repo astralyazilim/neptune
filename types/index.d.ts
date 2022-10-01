@@ -1,13 +1,21 @@
-import "reflect-metadata";
-import { Resource } from "./app/resource";
+import { NeptunMethods } from "./app";
+import { NeptuneResource } from "./app/resource";
 import { NeptuneRequest } from "./internal/body";
-export declare class TestResource extends Resource {
+import { INeptunResponse } from "./internal/response";
+import { NeptuneService } from "./app/service";
+declare class IsLoggedInHook extends NeptuneService {
+    methods: NeptunMethods[];
+    beforeResource(): {
+        isLoggedIn: boolean;
+    };
+}
+export declare class UserResource extends NeptuneResource {
     path: string;
-    GET(request: NeptuneRequest): Promise<{
-        body: string;
-        status: number;
-        headers: Record<string, string>;
-    }>;
+    GET(request: NeptuneRequest): INeptunResponse;
+    services: {
+        GET: (typeof IsLoggedInHook)[];
+    };
 }
 export declare const app: import("./app").NeptuneApp;
+export {};
 //# sourceMappingURL=index.d.ts.map

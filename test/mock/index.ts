@@ -1,9 +1,9 @@
 import { createNeptune } from "../../src/app";
-import { NodeAdapter } from "../../src/app/adapter";
-import { Resource } from "../../src/app/resource";
+import { NodeAdapter } from "../../src/adapter/adapterNode";
+import { NeptuneResource } from "../../src/app/resource";
 import { NeptuneRequest } from "../../src/internal/body";
 import { INeptunResponse, Response } from "../../src/internal/response";
-export class TestResource extends Resource {
+export class TestResource extends NeptuneResource {
   public path = "/user/:id";
 
   GET(request: NeptuneRequest): INeptunResponse | Promise<INeptunResponse> {
@@ -11,7 +11,7 @@ export class TestResource extends Resource {
   }
 }
 
-export class TestResource2 extends Resource {
+export class TestResource2 extends NeptuneResource {
   public path = "/user";
 
   GET(request: NeptuneRequest): INeptunResponse | Promise<INeptunResponse> {

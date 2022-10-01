@@ -1,7 +1,7 @@
-import type { Resource } from "../app/resource";
+import type { NeptuneResource } from "../app/resource";
 
 export const findResource = (
-  resources: Array<any & Resource> = [],
+  resources: Array<any & NeptuneResource> = [],
   path: string = "/"
-): any & Resource =>
+): any & NeptuneResource =>
   resources.find((resource) => new resource().getRegexpPath(path).test(path));

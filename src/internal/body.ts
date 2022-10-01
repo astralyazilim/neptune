@@ -104,7 +104,8 @@ export class NeptuneRequest {
     public readonly OriginalRequest: IncomingMessage,
     public readonly OriginalResponse: ServerResponse,
     public path: string,
-    public headers: IncomingHttpHeaders
+    public headers: IncomingHttpHeaders,
+    public locals: Record<string, unknown>
   ) {}
   formData(): Promise<Form> {
     let lastline = "";

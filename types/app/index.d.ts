@@ -1,17 +1,29 @@
 import { AdapterCore } from "./adapter";
-import { Resource } from "./resource";
+import { NeptuneResource } from "./resource";
 export interface INeptunAppOptions {
-    adapter?: typeof AdapterCore;
-    resources?: Array<any & Resource>;
+    adapter?: any & AdapterCore;
+    resources?: Array<any & NeptuneResource>;
     hostname?: string;
     port?: number;
+    providers?: any[];
+}
+export declare enum NeptunMethods {
+    GET = "GET",
+    POST = "POST",
+    PUT = "PUT",
+    PATCH = "PATCH",
+    DELETE = "DELETE",
+    HEAD = "HEAD",
+    OPTIONS = "OPTIONS",
+    TRACE = "TRACE",
+    CONNECT = "CONNECT",
+    ERROR = "ERROR"
 }
 export declare class NeptuneApp {
     adapter?: any;
     resources?: any[] | undefined;
     hostname?: string | undefined;
     port?: number | undefined;
-    server: unknown;
     constructor(adapter?: any, resources?: any[] | undefined, hostname?: string | undefined, port?: number | undefined);
     run(cb?: () => void): this;
     stop(): void;

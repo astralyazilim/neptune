@@ -1,49 +1,17 @@
+import { NeptunMethods } from ".";
 import { CreateRegexpurl } from "../healpers/createRegexpUrl";
 import { NeptuneError } from "../healpers/error";
 import { NeptuneRequest } from "../internal/body";
+import { NeptuneHeader } from "../internal/header";
+import { INeptuneServices, NeptuneService } from "./service";
 
-export abstract class Params {
-  abstract path: string | RegExp;
-
-  private createParams = () => {
-    if (this.path instanceof RegExp) return {};
-    const segments = this.path
-      .split("/")
-      .filter((s) => s !== "")
-      .reduce((t, c, i) => {
-        if (/^:/.test(c)) return { ...t, [c.replace(/^:/, "")]: i };
-        return t;
-      }, {});
-
-    return segments;
-  };
-
-  protected getParams = (url: string): Record<string, string> => {
-    let param: any[] = url.replace(/\/?\?.*/g, "").split("/");
-
-    param.shift();
-    const d = Object.entries(this.createParams() as Record<string, string>)
-      .map((p: [string, string]) => {
-        return { [p[0]]: param[Number(p[1])] };
-      })
-      .reduce(
-        (t: Record<string, string>, c: Record<string, string>) => ({
-          ...t,
-          ...c,
-        }),
-        {}
-      );
-    return d;
-  };
-}
-
-export abstract class Resource extends Params {
+export abstract class ResourceBase extends NeptuneHeader {
   public abstract path: string | RegExp;
   public url: string = "/";
-
+  public locals: Record<string, unknown> = {};
   public headers: Record<string, string> = {};
 
-  protected param(this: Resource, key: string): string {
+  protected param(this: ResourceBase, key: string): string {
     const params = this.getParams(this.url);
 
     return params[key];
@@ -62,113 +30,108 @@ export abstract class Resource extends Params {
   public handleEndpoint(method: string) {
     return this.hasOwnProperty(method.toUpperCase());
   }
-  public services?: {
-    all?: any[];
-    before?: any[];
-    after?: any[];
-  } | null;
 
-  protected SetHeaders(value: Record<string, string>): void {
-    this.headers = value;
-  }
+  // parse params
+  private createParams = () => {
+    if (this.path instanceof RegExp) return {};
+    const segments = this.path
+      .split("/")
+      .filter((s) => s !== "")
+      .reduce((t, c, i) => {
+        if (/^:/.test(c)) return { ...t, [c.replace(/^:/, "")]: i };
+        return t;
+      }, {});
 
-  protected AddHeader(key: string, value: string) {
-    this.headers = { ...this.headers, [key]: value };
-  }
+    return segments;
+  };
+  // get params
+  protected getParams = (url: string): Record<string, string> => {
+    let param: any[] = url.replace(/\/?\?.*/g, "").split("/");
 
-  protected RemoveHeader(key: string) {
-    const { [(key = key)]: value, ...rest } = this.headers;
-    this.headers = rest;
-  }
+    param.shift();
+    const d = Object.entries(this.createParams() as Record<string, string>)
+      .map((p: [string, string]) => {
+        return { [p[0]]: param[Number(p[1])] };
+      })
+      .reduce(
+        (t: Record<string, string>, c: Record<string, string>) => ({
+          ...t,
+          ...c,
+        }),
+        {}
+      );
+    return d;
+  };
 
-  public GetHeaders() {
-    return this.headers;
-  }
-  public BEFORE?: { GET?: any[] };
-  public GET?(
-    request?: NeptuneRequest
-  ):
+  public services?: INeptuneServices = {};
+}
+
+export class NeptuneResource extends ResourceBase {
+  public path: string | RegExp = "/";
+  public GET?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public POST?(
-    request?: NeptuneRequest
-  ):
+  public POST?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public PUT?(
-    request?: any
-  ):
+  public PUT?(request?: any):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public PATCH?(
-    request?: any
-  ):
+  public PATCH?(request?: any):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public DELETE?(
-    request?: Request
-  ):
+  public DELETE?(request?: Request):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public HEAD?(
-    request?: Request
-  ):
+  public HEAD?(request?: Request):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public OPTIONS?(
-    request?: Request
-  ):
+  public OPTIONS?(request?: Request):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public CONNECT?(
-    request?: Request
-  ):
+  public CONNECT?(request?: Request):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public TRACE?(
-    request?: Request
-  ):
+  public TRACE?(request?: Request):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public ERROR?(
-    error?: any & NeptuneError
-  ):
+  public ERROR?(error?: any & NeptuneError):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;

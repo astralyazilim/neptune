@@ -1,30 +1,22 @@
 import { NeptuneError } from "../healpers/error";
 import { NeptuneRequest } from "../internal/body";
-export declare abstract class Params {
-    abstract path: string | RegExp;
-    private createParams;
-    protected getParams: (url: string) => Record<string, string>;
-}
-export declare abstract class Resource extends Params {
+import { NeptuneHeader } from "../internal/header";
+import { INeptuneServices } from "./service";
+export declare abstract class ResourceBase extends NeptuneHeader {
     abstract path: string | RegExp;
     url: string;
+    locals: Record<string, unknown>;
     headers: Record<string, string>;
-    protected param(this: Resource, key: string): string;
+    protected param(this: ResourceBase, key: string): string;
     protected params(): Record<string, string>;
     getRegexpPath(): RegExp;
     handleEndpoint(method: string): boolean;
-    services?: {
-        all?: any[];
-        before?: any[];
-        after?: any[];
-    } | null;
-    protected SetHeaders(value: Record<string, string>): void;
-    protected AddHeader(key: string, value: string): void;
-    protected RemoveHeader(key: string): void;
-    GetHeaders(): Record<string, string>;
-    BEFORE?: {
-        GET?: any[];
-    };
+    private createParams;
+    protected getParams: (url: string) => Record<string, string>;
+    services?: INeptuneServices;
+}
+export declare class NeptuneResource extends ResourceBase {
+    path: string | RegExp;
     GET?(request?: NeptuneRequest): {
         body: string;
         status: number;

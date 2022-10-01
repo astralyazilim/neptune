@@ -1,20 +1,16 @@
-import {
-  IncomingMessage,
-  Server,
-  ServerResponse,
-  createServer,
-  OutgoingHttpHeader,
-} from "http";
 import { NeptuneError } from "../healpers/error";
 import { NeptuneRequest } from "../internal/body";
 import { INeptunResponse } from "../internal/response";
-import { NeptuneResource } from "./resource";
+import { NeptuneResource } from "../app/resource";
 import { findResource } from "../internal/findResource";
+import { NeptunMethods } from "../app";
+import { NeptuneService, INeptuneServices } from "../app/service";
 export interface INeptunAdapterResponse {
   headers: Record<string, string>;
   status: number;
   body: string | Buffer | Uint8Array | undefined;
 }
+
 export class AdapterCore {
   constructor(
     protected host: string | undefined = undefined,
@@ -34,6 +30,23 @@ export class AdapterCore {
       resource.url = path;
       if (method in resource) {
         try {
+          if (method in resource.services) {
+            const services = resource.services[method];
+            services.forEach((service: any & NeptuneService) => {
+              service = new service();
+              service.locals = { ...resource.locals };
+              if ("beforeResource" in service) {
+                resource.locals = {
+                  ...resource.locals,
+                  ...service.beforeResource(request),
+                };
+                resource.headers = {
+                  ...resource.GetHeaders(),
+                  ...service.GetHeaders(),
+                };
+              }
+            });
+          }
           const response = await Promise.resolve(
             resource[method](request)
           ).then((response: INeptunResponse) => response);
@@ -49,6 +62,21 @@ export class AdapterCore {
           else {
             const response = resource.ERROR(error);
             return response;
+          }
+        } finally {
+          let serviceLocals: Record<string, unknown> = { ...resource.locals };
+          if (method in resource.services) {
+            const services = resource.services[method];
+            services.forEach((service: any & NeptuneService) => {
+              service = new service();
+              service.locals = { ...resource.locals };
+              if ("afterResource" in service) {
+                resource.locals = {
+                  ...serviceLocals,
+                  ...service.beforeResource(request),
+                };
+              }
+            });
           }
         }
       } else
