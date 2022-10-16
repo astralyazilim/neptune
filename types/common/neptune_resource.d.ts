@@ -40,7 +40,7 @@ export declare class NeptuneResource extends ResourceBase {
         status: number;
         headers: Record<string, string>;
     }>;
-    PUT?(request?: any): {
+    PUT?(request?: NeptuneRequest): {
         body: string;
         status: number;
         headers: Record<string, string>;
@@ -49,7 +49,7 @@ export declare class NeptuneResource extends ResourceBase {
         status: number;
         headers: Record<string, string>;
     }>;
-    PATCH?(request?: any): {
+    PATCH?(request?: NeptuneRequest): {
         body: string;
         status: number;
         headers: Record<string, string>;
@@ -58,7 +58,7 @@ export declare class NeptuneResource extends ResourceBase {
         status: number;
         headers: Record<string, string>;
     }>;
-    DELETE?(request?: Request): {
+    DELETE?(request?: NeptuneRequest): {
         body: string;
         status: number;
         headers: Record<string, string>;
@@ -67,7 +67,7 @@ export declare class NeptuneResource extends ResourceBase {
         status: number;
         headers: Record<string, string>;
     }>;
-    HEAD?(request?: Request): {
+    HEAD?(request?: NeptuneRequest): {
         body: string;
         status: number;
         headers: Record<string, string>;
@@ -76,7 +76,7 @@ export declare class NeptuneResource extends ResourceBase {
         status: number;
         headers: Record<string, string>;
     }>;
-    OPTIONS?(request?: Request): {
+    OPTIONS?(request?: NeptuneRequest): {
         body: string;
         status: number;
         headers: Record<string, string>;
@@ -85,7 +85,7 @@ export declare class NeptuneResource extends ResourceBase {
         status: number;
         headers: Record<string, string>;
     }>;
-    CONNECT?(request?: Request): {
+    CONNECT?(request?: NeptuneRequest): {
         body: string;
         status: number;
         headers: Record<string, string>;
@@ -94,7 +94,7 @@ export declare class NeptuneResource extends ResourceBase {
         status: number;
         headers: Record<string, string>;
     }>;
-    TRACE?(request?: Request): {
+    TRACE?(request?: NeptuneRequest): {
         body: string;
         status: number;
         headers: Record<string, string>;
