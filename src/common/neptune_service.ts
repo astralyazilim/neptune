@@ -31,7 +31,6 @@ export interface IHasService {
 export abstract class NeptuneService extends NeptuneHeader {
   private providers: Record<string, any & NeptuneProvider> = {};
   public locals: Record<string, string> = {};
-  public abstract methods: string[];
   public abstract beforeResource(
     request?: NeptuneRequest
   ): Promise<Record<string, unknown>> | Record<string, unknown>;
