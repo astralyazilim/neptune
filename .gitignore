@@ -120,3 +120,4 @@ coverage/
 coverage
 
 !types
+node_modules
