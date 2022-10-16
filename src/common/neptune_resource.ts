@@ -111,49 +111,49 @@ export class NeptuneResource extends ResourceBase {
         status: number;
         headers: Record<string, string>;
       }>;
-  public PUT?(request?: any):
+  public PUT?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public PATCH?(request?: any):
+  public PATCH?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public DELETE?(request?: Request):
+  public DELETE?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public HEAD?(request?: Request):
+  public HEAD?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public OPTIONS?(request?: Request):
+  public OPTIONS?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public CONNECT?(request?: Request):
+  public CONNECT?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
         status: number;
         headers: Record<string, string>;
       }>;
-  public TRACE?(request?: Request):
+  public TRACE?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }
     | Promise<{
         body: string;
