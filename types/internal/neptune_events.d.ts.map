@@ -1,1 +1,1 @@
-{"version":3,"file":"neptune_events.d.ts","sourceRoot":"","sources":["../../src/internal/neptune_events.ts"],"names":[],"mappings":";AAAA,OAAO,YAAY,MAAM,QAAQ,CAAC;AAElC,qBAAa,aAAc,SAAQ,YAAY;CAAG"}
+{"version":3,"file":"neptune_events.d.ts","sourceRoot":"","sources":["../../src/internal/neptune_events.ts"],"names":[],"mappings":"AAAA,OAAO,YAAY,MAAM,QAAQ,CAAC;AAElC,qBAAa,aAAc,SAAQ,YAAY;CAAG"}

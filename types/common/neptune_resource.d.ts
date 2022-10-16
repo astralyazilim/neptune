@@ -5,13 +5,14 @@ import { NeptuneProvider } from "./neptune_provider";
 import { IHasService, INeptuneServices } from "./neptune_service";
 declare abstract class ResourceBase extends NeptuneHeader implements IHasService {
     private providers;
-    abstract path: string | RegExp;
+    private regexpUrls;
+    abstract path: string | RegExp | Array<string | RegExp>;
     url: string;
     locals: Record<string, unknown>;
     headers: Record<string, string>;
     protected param(this: ResourceBase, key: string): string;
     protected params(): Record<string, string>;
-    getRegexpPath(): RegExp;
+    getRegexpPath(): RegExp[];
     handleEndpoint(method: string): boolean;
     SetProviders(providers: Record<string, any & NeptuneProvider>): void;
     protected GetProvider(name: string): any;
@@ -20,7 +21,7 @@ declare abstract class ResourceBase extends NeptuneHeader implements IHasService
     services: INeptuneServices;
 }
 export declare class NeptuneResource extends ResourceBase {
-    path: string | RegExp;
+    path: string | RegExp | Array<string | RegExp>;
     GET?(request?: NeptuneRequest): {
         body: string;
         status: number;
