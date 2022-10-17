@@ -1,29 +1,45 @@
+import EventEmitter from "events";
+import { IHasApp, NeptuneApp } from "../app/neptune_app";
 import { CreateRegexpurl } from "../helpers/create_regexp_url";
+import { applyMixins } from "../helpers/mixin";
 import { NeptuneHeader } from "../internal";
+import { IHasDispatch } from "../internal/event_dispatcher";
 import { NeptuneRequest } from "../internal/neptune_form";
 import { NeptuneError } from "./neptune_error";
 import { NeptuneProvider, ProviderType } from "./neptune_provider";
 import { IHasService, INeptuneServices } from "./neptune_service";
 
-abstract class ResourceBase extends NeptuneHeader implements IHasService {
+abstract class ResourceBase
+  extends NeptuneHeader
+  implements IHasService, IHasDispatch, IHasApp
+{
+  constructor(public app: NeptuneApp) {
+    super();
+  }
+  //#region abstract properties
+
+  abstract dispatch(event: string, ...args: any[]): void;
+  public abstract path: string | RegExp | Array<string | RegExp>;
+  //#endregion
+  //#region properties
   private providers: Record<string, any & NeptuneProvider> = {};
   private regexpUrls: Array<RegExp> = [];
-  public abstract path: string | RegExp | Array<string | RegExp>;
   public url: string = "/";
   public locals: Record<string, unknown> = {};
   public headers: Record<string, string> = {};
+  public services: INeptuneServices = {};
+  //#endregion
 
+  //#region methods
   protected param(this: ResourceBase, key: string): string {
     const params = this.getParams(this.url);
 
     return params[key];
   }
-
   protected params(): Record<string, string> {
     if (this.path instanceof RegExp) return {};
     return this.getParams(this.url);
   }
-
   public getRegexpPath(): RegExp[] {
     if (this.path instanceof Array<RegExp | string>) {
       return this.path.map((path) =>
@@ -34,11 +50,9 @@ abstract class ResourceBase extends NeptuneHeader implements IHasService {
       else return [CreateRegexpurl(this.path)];
     }
   }
-
   public handleEndpoint(method: string) {
     return this.hasOwnProperty(method.toUpperCase());
   }
-
   public SetProviders(providers: Record<string, any & NeptuneProvider>) {
     this.providers = providers;
   }
@@ -92,10 +106,13 @@ abstract class ResourceBase extends NeptuneHeader implements IHasService {
     return d;
   };
 
-  public services: INeptuneServices = {};
+  //#endregion
 }
 
 export class NeptuneResource extends ResourceBase {
+  public dispatch(event: string, ...args: any): unknown {
+    return this.app.emit(event, this, ...args);
+  }
   public path: string | RegExp | Array<string | RegExp> = "/";
   public GET?(request?: NeptuneRequest):
     | { body: string; status: number; headers: Record<string, string> }

@@ -1,15 +1,21 @@
+import { IHasApp, NeptuneApp } from "../app/neptune_app";
 import { NeptuneHeader } from "../internal";
+import { IHasDispatch } from "../internal/event_dispatcher";
 import { NeptuneRequest } from "../internal/neptune_form";
 import { NeptuneError } from "./neptune_error";
 import { NeptuneProvider } from "./neptune_provider";
 import { IHasService, INeptuneServices } from "./neptune_service";
-declare abstract class ResourceBase extends NeptuneHeader implements IHasService {
+declare abstract class ResourceBase extends NeptuneHeader implements IHasService, IHasDispatch, IHasApp {
+    app: NeptuneApp;
+    constructor(app: NeptuneApp);
+    abstract dispatch(event: string, ...args: any[]): void;
+    abstract path: string | RegExp | Array<string | RegExp>;
     private providers;
     private regexpUrls;
-    abstract path: string | RegExp | Array<string | RegExp>;
     url: string;
     locals: Record<string, unknown>;
     headers: Record<string, string>;
+    services: INeptuneServices;
     protected param(this: ResourceBase, key: string): string;
     protected params(): Record<string, string>;
     getRegexpPath(): RegExp[];
@@ -18,9 +24,9 @@ declare abstract class ResourceBase extends NeptuneHeader implements IHasService
     protected GetProvider(name: string): any;
     private createParams;
     protected getParams: (url: string) => Record<string, string>;
-    services: INeptuneServices;
 }
 export declare class NeptuneResource extends ResourceBase {
+    dispatch(event: string, ...args: any): unknown;
     path: string | RegExp | Array<string | RegExp>;
     GET?(request?: NeptuneRequest): {
         body: string;

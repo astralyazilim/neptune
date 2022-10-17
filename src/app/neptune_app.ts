@@ -7,9 +7,6 @@ import { AdapterCore } from "./neptune_adapter";
 export interface IHasApp {
   app: NeptuneApp;
 }
-export interface IHasApp {
-  app: NeptuneApp;
-}
 
 export interface INeptunAppOptions {
   adapter?: any & AdapterCore;

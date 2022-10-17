@@ -44,7 +44,6 @@ export class AdapterCore implements IHasApp {
       this.app.resources,
       path
     );
-
     const scopedOrTransient = Object.values(this.app.providers)
       .filter((x) => x.scope != ProviderType.SINGLETON)
       .reduce(
@@ -68,7 +67,7 @@ export class AdapterCore implements IHasApp {
         status: 404,
       };
     } else {
-      resource = new resource();
+      resource = new resource(this.app);
       resource.SetProviders({ ...this.app.providers, ...scopedOrTransient });
       resource.url = path;
       if (method in resource) {
